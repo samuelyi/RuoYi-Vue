@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import { listTable, previewTable, delTable } from "@/api/tool/gen";
+import { listTable, previewTable, delTable, genCode } from "@/api/tool/gen";
 import importTable from "./importTable";
 import { downLoadZip } from "@/utils/zipdownload";
 export default {
@@ -241,7 +241,13 @@ export default {
         this.msgError("请选择要生成的数据");
         return;
       }
-      downLoadZip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi");
+      if(row.genType === "1") {
+        genCode(row.tableName).then(response => {
+          this.msgSuccess("成功生成到自定义路径：" + row.genPath);
+        });
+      } else {
+        downLoadZip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi");
+      }
     },
     /** 打开导入表弹窗 */
     openImportTable() {
@@ -270,7 +276,7 @@ export default {
     /** 修改按钮操作 */
     handleEditTable(row) {
       const tableId = row.tableId || this.ids[0];
-      this.$router.push({ path: "/gen/edit", query: { tableId: tableId } });
+      this.$router.push("/gen/edit/" + tableId);
     },
     /** 删除按钮操作 */
     handleDelete(row) {
